@@ -25,8 +25,8 @@ describe("Lock", function () {
 
       await galang.createGalang(
         this.address,
-        "kotnol",
-        "kocok",
+        "my galang",
+        "kisah galang",
         "1000000000000000000",
         Math.floor((Date.now()) / 1000) + 6
       )
