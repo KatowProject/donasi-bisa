@@ -94,4 +94,16 @@ contract Galang {
         GalangData[_idGalang].status = 2;
     }
 
+    function getGalangData() public view returns (Penggalang[] memory) {
+        if (GalangDatalength == 0) {
+            return new Penggalang[](0);
+        }
+        
+        Penggalang[] memory result = new Penggalang[](GalangDatalength);
+        for (uint i = 0; i < GalangDatalength; i++) {
+            result[i] = GalangData[i];
+        }
+        return result;
+    }
+
 }
