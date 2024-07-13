@@ -45,12 +45,11 @@ contract Galang {
         owner = _owner;
     }
 
-    function createGalang(address _adr, string memory _nama, string memory _desc, uint256 _target, uint256 _deadline) public onlyOwner {
-        require(_adr != address(0), "Address cannot be 0x0");
+    function createGalang( string memory _nama, string memory _desc, uint256 _target, uint256 _deadline) public {
         require(_target > 0, "Target must be greater than 0");
         require(_deadline > block.timestamp, "Deadline must be greater than current time");
 
-        GalangData[GalangDatalength] = Penggalang(_adr, _nama, _desc, _target, 0, _deadline, 0, 0);
+        GalangData[GalangDatalength] = Penggalang(msg.sender, _nama, _desc, _target, 0, _deadline, 0, 0);
         GalangDatalength++;
     }
 
