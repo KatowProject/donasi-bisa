@@ -45,7 +45,7 @@ contract Galang {
         owner = _owner;
     }
 
-    function createGalang( string memory _nama, string memory _desc, uint256 _target, uint256 _deadline) public {
+    function createGalang(string memory _nama, string memory _desc, uint256 _target, uint256 _deadline) public {
         require(_target > 0, "Target must be greater than 0");
         require(_deadline > block.timestamp, "Deadline must be greater than current time");
 
