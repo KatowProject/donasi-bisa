@@ -15,6 +15,7 @@ contract Galang {
         address penggalang;
         string nama;
         string deskripsi;
+        string image;
         uint256 target;
         uint256 terkumpul;
         uint256 deadline;
@@ -29,7 +30,7 @@ contract Galang {
         uint256 value;
     }
 
-    uint256 GalangDatalength = 0;
+    uint256 public GalangDatalength = 0;
 
     constructor() {
         owner = msg.sender;
@@ -37,7 +38,6 @@ contract Galang {
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
-
         _;
     }
 
@@ -45,59 +45,57 @@ contract Galang {
         owner = _owner;
     }
 
-    function createGalang(string memory _nama, string memory _desc, uint256 _target, uint256 _deadline) public {
+    function createGalang(string calldata _nama, string calldata _desc, string calldata _img, uint256 _target, uint256 _deadline) public {
         require(_target > 0, "Target must be greater than 0");
         require(_deadline > block.timestamp, "Deadline must be greater than current time");
 
-        GalangData[GalangDatalength] = Penggalang(msg.sender, _nama, _desc, _target, 0, _deadline, 0, 0);
+        GalangData[GalangDatalength] = Penggalang(msg.sender, _nama, _desc, _img, _target, 0, _deadline, 0, 0);
         GalangDatalength++;
     }
 
     function depo(uint256 _idGalang) public payable {
-        Penggalang memory galangData = GalangData[_idGalang];
+        Penggalang storage galangData = GalangData[_idGalang];
         require(galangData.penggalang != address(0), "Penggalang tidak di temukan");
         require(msg.value > 0, "Tidak ada Value");
         require(galangData.deadline > block.timestamp, "Galang dana sudah selesai");
+
         uint256 toBeDeposit = msg.value;
         if(toBeDeposit + galangData.terkumpul >= galangData.target) {
             uint256 toRefund = toBeDeposit + galangData.terkumpul - galangData.target;
-            toBeDeposit = msg.value - toRefund;
+            toBeDeposit -= toRefund;
             payable(msg.sender).transfer(toRefund);
         }
 
-        GalangData[_idGalang].terkumpul += toBeDeposit;
-        GalangData[_idGalang].totalDonatur++;
+        galangData.terkumpul += toBeDeposit;
+        galangData.totalDonatur++;
         donatur[_idGalang].push(IDonatur(msg.sender, toBeDeposit));
     }
 
     function withdraw(uint256 _idGalang) public {
-        Penggalang memory galangData = GalangData[_idGalang];
+        Penggalang storage galangData = GalangData[_idGalang];
         require(galangData.penggalang != address(0), "Penggalang tidak di temukan");
         require(galangData.penggalang == msg.sender, "Bukan penggalang dana");
         require(galangData.deadline <= block.timestamp, "Penggalangan Dana belum selesai");
         require(galangData.status == 0, "Sudah di Withdraw");
-        GalangData[_idGalang].status = 1;
+
+        galangData.status = 1;
         payable(msg.sender).transfer(galangData.terkumpul);
     }
 
     function FraudDonation(uint256 _idGalang) public onlyOwner {
-        Penggalang memory galangData = GalangData[_idGalang];
+        Penggalang storage galangData = GalangData[_idGalang];
         require(galangData.penggalang != address(0), "Penggalang tidak di temukan");
         require(galangData.status != 2, "Sudah ter refund");
 
-        for ( uint i =0; i < galangData.totalDonatur;i++) {
-            IDonatur memory Donatur = donatur[_idGalang][i];
-            payable(Donatur.donatur).transfer(Donatur.value); 
+        IDonatur[] storage donaturList = donatur[_idGalang];
+        for (uint i = 0; i < donaturList.length; i++) {
+            payable(donaturList[i].donatur).transfer(donaturList[i].value); 
         }
 
-        GalangData[_idGalang].status = 2;
+        galangData.status = 2;
     }
 
     function getGalangData() public view returns (Penggalang[] memory) {
-        if (GalangDatalength == 0) {
-            return new Penggalang[](0);
-        }
-        
         Penggalang[] memory result = new Penggalang[](GalangDatalength);
         for (uint i = 0; i < GalangDatalength; i++) {
             result[i] = GalangData[i];
@@ -108,5 +106,4 @@ contract Galang {
     function getDonatur(uint256 _idGalang) public view returns (IDonatur[] memory) {
         return donatur[_idGalang];
     }
-
 }
