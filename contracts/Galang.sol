@@ -105,4 +105,8 @@ contract Galang {
         return result;
     }
 
+    function getDonatur(uint256 _idGalang) public view returns (IDonatur[] memory) {
+        return donatur[_idGalang];
+    }
+
 }
