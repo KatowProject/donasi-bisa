@@ -32,6 +32,7 @@ describe("Lock", function () {
       await galang.createGalang(
         "my galang",
         "kisah galang",
+        "img/src",
         "1000000000000000000",
         Math.floor((Date.now()) / 1000) + 6
       )
@@ -78,6 +79,7 @@ describe("Lock", function () {
       await galang.createGalang(
         "my galang",
         "kisah galang",
+        "img/src",
         "1000000000000000000",
         Math.floor((Date.now()) / 1000) + 6
       )
