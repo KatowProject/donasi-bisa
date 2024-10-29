@@ -58,12 +58,15 @@ contract Galang {
         require(galangData.penggalang != address(0), "Penggalang tidak di temukan");
         require(msg.value > 0, "Tidak ada Value");
         require(galangData.deadline > block.timestamp, "Galang dana sudah selesai");
+        require(galangData.target == galangData.terkumpul, "Target sudah tercapai");
 
         uint256 toBeDeposit = msg.value;
         if(toBeDeposit + galangData.terkumpul >= galangData.target) {
             uint256 toRefund = toBeDeposit + galangData.terkumpul - galangData.target;
             toBeDeposit -= toRefund;
             payable(msg.sender).transfer(toRefund);
+
+            galangData.status = 1;
         }
 
         galangData.terkumpul += toBeDeposit;
