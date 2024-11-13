@@ -5,6 +5,7 @@
     "hardhat": "^2.22.6"
   },
   "dependencies": {
-    "bignumber.js": "^9.1.2"
+    "bignumber.js": "^9.1.2",
+    "js-sha3": "^0.9.3"
   }
 }
