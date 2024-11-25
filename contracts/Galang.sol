@@ -56,9 +56,12 @@ contract Galang {
         require(_deadline > block.timestamp, "Deadline must be greater than current time");
 
         bytes32 id = keccak256(abi.encodePacked(_nama, _desc, _img, _target, _deadline));
+        require(GalangData[id].penggalang == address(0), "Galang dana sudah ada");
         GalangData[id] = Penggalang(msg.sender, _nama, _desc, _img, _target, 0, _deadline, 0, 0);
         galangIds.push(id);
         GalangDatalength++;
+        
+        emit GalangCreated(msg.sender, _nama, _desc, _img, _target, _deadline);
     }
 
     function depo(bytes32 _idGalang) public payable {
@@ -77,6 +80,8 @@ contract Galang {
         galangData.terkumpul += toBeDeposit;
         galangData.totalDonatur++;
         donatur[_idGalang].push(IDonatur(msg.sender, toBeDeposit));
+
+        emit Deposited(msg.sender, toBeDeposit);
     }
 
     function withdraw(bytes32 _idGalang) public {
@@ -88,6 +93,8 @@ contract Galang {
 
         galangData.status = 1;
         payable(msg.sender).transfer(galangData.terkumpul);
+
+        emit Withdrawn(msg.sender, galangData.terkumpul);
     }
 
     function FraudDonation(bytes32 _idGalang) public onlyOwner {
@@ -101,6 +108,8 @@ contract Galang {
         }
 
         galangData.status = 2;
+
+        emit FraudedGalang(msg.sender, galangData.terkumpul);
     }
 
     function getGalangData() public view returns (Penggalang[] memory) {
