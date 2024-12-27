@@ -5,6 +5,7 @@ contract Galang {
 
     address public owner;
     mapping(bytes32 => Penggalang) public GalangData;
+    mapping (bytes32 => IDonatur[]) public donatur;
     bytes32[] private galangIds;
 
     /*
@@ -24,17 +25,20 @@ contract Galang {
         uint256 status;
     }
 
-    // Events for transparancy
-    event GalangCreated(address indexed penggalang, string nama, string deskripsi, string image, uint256 target, uint256 deadline);
-    event Deposited(address indexed donatur, uint256 value);
-    event Withdrawn(address indexed penggalang, uint256 value);
-    event FraudedGalang(address indexed penggalang, uint256 value);
-    mapping (bytes32 => IDonatur[]) public donatur;
-
     struct IDonatur {
         address donatur;
         uint256 value;
     }
+
+    struct PenggalangDetail {
+        bytes32 id;
+        Penggalang penggalang;
+    }
+
+    event GalangCreated(address indexed penggalang, string nama, string deskripsi, string image, uint256 target, uint256 deadline);
+    event Deposited(address indexed donatur, uint256 value);
+    event Withdrawn(address indexed penggalang, uint256 value);
+    event FraudedGalang(address indexed penggalang, uint256 value);
 
     uint256 public GalangDatalength = 0;
 
@@ -112,10 +116,11 @@ contract Galang {
         emit FraudedGalang(msg.sender, galangData.terkumpul);
     }
 
-    function getGalangData() public view returns (Penggalang[] memory) {
-        Penggalang[] memory result = new Penggalang[](GalangDatalength);
+    function getGalangData() public view returns (PenggalangDetail[] memory) {
+        PenggalangDetail[] memory result = new PenggalangDetail[](GalangDatalength);
         for (uint256 i = 0; i < GalangDatalength; i++) {
-            result[i] = GalangData[galangIds[i]];
+            bytes32 id = galangIds[i];
+            result[i] = PenggalangDetail(id, GalangData[id]);
         }
         return result;
     }
