@@ -35,10 +35,10 @@ contract Galang {
         Penggalang penggalang;
     }
 
-    event GalangCreated(address indexed penggalang, string nama, string deskripsi, string image, uint256 target, uint256 deadline);
-    event Deposited(address indexed donatur, uint256 value);
-    event Withdrawn(address indexed penggalang, uint256 value);
-    event FraudedGalang(address indexed penggalang, uint256 value);
+    event GalangCreated(address indexed penggalang, string nama, string deskripsi, string image, uint256 target, uint256 deadline, uint256 timestamp);
+    event Deposited(address indexed donatur, uint256 value, bytes32 galangId, uint256 timestamp);
+    event Withdrawn(address indexed penggalang, uint256 value, bytes32 galangId, uint256 timestamp);
+    event FraudedGalang(address indexed penggalang, uint256 value, bytes32 galangId, uint256 timestamp);
 
     uint256 public GalangDatalength = 0;
 
@@ -65,7 +65,7 @@ contract Galang {
         galangIds.push(id);
         GalangDatalength++;
         
-        emit GalangCreated(msg.sender, _nama, _desc, _img, _target, _deadline);
+        emit GalangCreated(msg.sender, _nama, _desc, _img, _target, _deadline, block.timestamp);
     }
 
     function depo(bytes32 _idGalang) public payable {
@@ -85,7 +85,7 @@ contract Galang {
         galangData.totalDonatur++;
         donatur[_idGalang].push(IDonatur(msg.sender, toBeDeposit));
 
-        emit Deposited(msg.sender, toBeDeposit);
+        emit Deposited(msg.sender, toBeDeposit, _idGalang, block.timestamp);
     }
 
     function withdraw(bytes32 _idGalang) public {
@@ -98,7 +98,7 @@ contract Galang {
         galangData.status = 1;
         payable(msg.sender).transfer(galangData.terkumpul);
 
-        emit Withdrawn(msg.sender, galangData.terkumpul);
+        emit Withdrawn(msg.sender, galangData.terkumpul, _idGalang, block.timestamp);
     }
 
     function FraudDonation(bytes32 _idGalang) public onlyOwner {
@@ -113,7 +113,7 @@ contract Galang {
 
         galangData.status = 2;
 
-        emit FraudedGalang(msg.sender, galangData.terkumpul);
+        emit FraudedGalang(msg.sender, galangData.terkumpul, _idGalang, block.timestamp);
     }
 
     function getGalangData() public view returns (PenggalangDetail[] memory) {
