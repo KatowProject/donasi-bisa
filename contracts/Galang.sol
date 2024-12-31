@@ -113,7 +113,7 @@ contract Galang {
 
         galangData.status = 2;
 
-        emit FraudedGalang(msg.sender, galangData.terkumpul, _idGalang, block.timestamp);
+        emit FraudedGalang(galangData.penggalang, galangData.terkumpul, _idGalang, block.timestamp);
     }
 
     function getGalangData() public view returns (PenggalangDetail[] memory) {
