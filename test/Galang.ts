@@ -54,7 +54,10 @@ describe("Lock", function () {
     it("Should deposit 0.5 eth success", async function () {
       const toDeposit = new BigNumber("500000000000000000");
       await galang.depo(idTest, { value: toDeposit.toString() });
-      expect((await galang.GalangData(idTest)).terkumpul).to.equal(toDeposit);
+
+      const toDeposit2 = new BigNumber("100000000000000000");
+      await galang.depo(idTest, { value: toDeposit2.toString() });
+      expect((await galang.GalangData(idTest)).terkumpul).to.equal(toDeposit.plus(toDeposit2));
     });
 
 
@@ -65,19 +68,41 @@ describe("Lock", function () {
 
     // });
 
+    it("Should show galang data list", async function () {
+      const data = await galang.getGalangData();
+      expect(data.length).to.equal(1);
+    });
+
     // it("Should show galang data list", async function () {
     //   const data = await galang.getGalangData();
     //   expect(data.length).to.equal(1);
     // });
+
+    it("Should get donaturs in galang", async function () {
+      const data = await galang.getDonatur(idTest);
+
+      expect(data.length).to.greaterThan(0);
+    });
 
     // it("Should get donaturs in galang", async function () {
     //   const data = await galang.getDonatur(0);
     //   expect(data.length).to.greaterThan(0);
     // });
 
+    it("Should revert if not time", async function () {
+      await expect(galang.withdraw(idTest)).to.be.revertedWith("Penggalangan Dana belum selesai");
+    });
+
     // it("Should revert not time", async function () {
     //   await expect(galang.withdraw(0)).to.be.revertedWith("Penggalangan Dana belum selesai");
     // });
+
+    it("Should Success withdraw", async function () {
+      await sleep(5000);
+      await galang.withdraw(idTest)
+
+      expect((await galang.GalangData(idTest)).status).to.equal(1);
+    });
 
     // it("Should Success withdraw", async function () {
     //   await sleep(5000);
