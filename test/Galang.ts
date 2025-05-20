@@ -104,32 +104,30 @@ describe("Lock", function () {
       expect((await galang.GalangData(idTest)).status).to.equal(1);
     });
 
-    // it("Should Success withdraw", async function () {
-    //   await sleep(5000);
-    //   await galang.withdraw(0)
+    it('Should refund if Fraud', async function () {
+      const time = Math.floor((Date.now()) / 1000) + 10;
+      await galang.createGalang(
+        "my galang",
+        "kisah galang",
+        "img/src",
+        "1000000000000000000",
+        time
+      )
 
-    //   expect((await galang.GalangData(0)).status).to.equal(1);
-    // });
+      const id = ethers.keccak256(solidityPacked(
+        ["string", "string", "string", "uint256", "uint256"],
+        ["my galang", "kisah galang", "img/src", "1000000000000000000", time]
+      ));
 
-    // it('Should refund if Fraud', async function () {
-    //   await galang.createGalang(
-    //     "my galang",
-    //     "kisah galang",
-    //     "img/src",
-    //     "1000000000000000000",
-    //     Math.floor((Date.now()) / 1000) + 6
-    //   )
+      const toDeposit = new BigNumber("1000000000000000000");
+      await galang.depo(id, { value: toDeposit.toString() });
 
+      await sleep(6500);
 
-    //   const toDeposit = new BigNumber("1000000000000000000");
-    //   await galang.depo(1, { value: toDeposit.toString() });
+      await galang.FraudDonation(id);
 
-    //   await sleep(6500);
-
-    //   await galang.FraudDonation(1);
-
-    //   const status = (await galang.GalangData(1)).status;
-    //   expect(status).to.equal(2);
-    // });
+      const status = (await galang.GalangData(id)).status;
+      expect(status).to.equal(2);
+    });
   });
 });

@@ -61,6 +61,7 @@ contract Galang {
 
         bytes32 id = keccak256(abi.encodePacked(_nama, _desc, _img, _target, _deadline));
         require(GalangData[id].penggalang == address(0), "Galang dana sudah ada");
+        
         GalangData[id] = Penggalang(msg.sender, _nama, _desc, _img, _target, 0, _deadline, 0, 0);
         galangIds.push(id);
         GalangDatalength++;
@@ -92,7 +93,10 @@ contract Galang {
         Penggalang storage galangData = GalangData[_idGalang];
         require(galangData.penggalang != address(0), "Penggalang tidak di temukan");
         require(galangData.penggalang == msg.sender, "Bukan penggalang dana");
-        require(galangData.deadline <= block.timestamp, "Penggalangan Dana belum selesai");
+        require(
+            galangData.terkumpul >= galangData.target || galangData.deadline <= block.timestamp,
+            "Belum bisa withdraw: target belum tercapai & deadline belum lewat"
+        );
         require(galangData.status == 0, "Sudah di Withdraw");
 
         galangData.status = 1;

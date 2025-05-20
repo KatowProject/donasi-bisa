@@ -2,9 +2,12 @@
   "name": "hardhat-project",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.6"
+    "hardhat": "^2.23.0",
+    "hardhat-gas-reporter": "^1.0.8",
+    "hardhat-tracer": "^3.2.0"
   },
   "dependencies": {
+    "@nomicfoundation/ethereumjs-util": "^9.0.4",
     "bignumber.js": "^9.1.2",
     "js-sha3": "^0.9.3"
   }
